@@ -1,6 +1,6 @@
 import streamlit as st
-import streamlit as st
 import pandas as pd
+from PIL import Image
 import matplotlib.pyplot as plt
 from kalkulator import hitung_bmi
 from chatbot import tanya_ai
@@ -135,7 +135,14 @@ div[data-testid="stMetric"]{
 </style>
 """, unsafe_allow_html=True)
 
-st.sidebar.image("assets/logoSYM.jpeg", width=150)
+import os
+
+logo_path = "assets/logoSYM.jpeg"
+
+if os.path.exists(logo_path):
+    st.sidebar.image(logo_path, width=150)
+else:
+    st.sidebar.warning("Logo tidak ditemukan")
 
 st.sidebar.title("🏥 HealthyLife AI")
 
@@ -154,13 +161,6 @@ HealthyLife AI membantu Anda:
 
 💬 Menjawab pertanyaan kesehatan
 """)
-
-
-st.set_page_config(
-    page_title="HealthyLife AI",
-    page_icon="assets/logoSYM.jpeg",
-    layout="wide"
-)
 
 st.sidebar.title("HealthyLife AI")
 
@@ -201,9 +201,9 @@ st.subheader("💬 Chat")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    if "riwayat_bmi" not in st.session_state:
+if "riwayat_bmi" not in st.session_state:
         st.session_state.riwayat_bmi = []
-    st.sidebar.markdown("---")
+st.sidebar.markdown("---")
 st.sidebar.subheader("📜 Riwayat")
 
 st.sidebar.write(
