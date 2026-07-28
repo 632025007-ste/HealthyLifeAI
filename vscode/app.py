@@ -1,5 +1,7 @@
 import streamlit as st
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 from kalkulator import hitung_bmi
 from chatbot import tanya_ai
 def menu(tujuan):
@@ -89,7 +91,7 @@ def olahraga(bmi):
 
 st.set_page_config(
     page_title="HealthyLife AI",
-    page_icon="assets/logo.png",
+    page_icon="assets/logoSYM.jpeg",
     layout="wide"
 )
 
@@ -133,6 +135,8 @@ div[data-testid="stMetric"]{
 </style>
 """, unsafe_allow_html=True)
 
+st.sidebar.image("assets/logoSYM.jpeg", width=150)
+
 st.sidebar.title("🏥 HealthyLife AI")
 
 st.sidebar.success("🤖 AI Health Assistant")
@@ -151,9 +155,11 @@ HealthyLife AI membantu Anda:
 💬 Menjawab pertanyaan kesehatan
 """)
 
-st.sidebar.image(
-    "https://cdn-icons-png.flaticon.com/512/2966/2966486.png",
-    width=120
+
+st.set_page_config(
+    page_title="HealthyLife AI",
+    page_icon="assets/logoSYM.jpeg",
+    layout="wide"
 )
 
 st.sidebar.title("HealthyLife AI")
@@ -195,6 +201,8 @@ st.subheader("💬 Chat")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+    if "riwayat_bmi" not in st.session_state:
+        st.session_state.riwayat_bmi = []
     st.sidebar.markdown("---")
 st.sidebar.subheader("📜 Riwayat")
 
@@ -278,6 +286,54 @@ if st.button("Hitung BMI"):
 
     st.info(kategori)
 
+    from datetime import datetime
+
+    st.session_state.riwayat_bmi.append({
+    "Tanggal": datetime.now().strftime("%d-%m-%Y %H:%M"),
+    "Berat": berat,
+    "BMI": bmi
+    })
+
     st.subheader("🏃 Rekomendasi Olahraga")
 
     st.write(olahraga(bmi))
+st.divider()
+
+st.header("📈 Grafik Perkembangan BMI")
+
+if len(st.session_state.riwayat_bmi) > 0:
+
+    df = pd.DataFrame(st.session_state.riwayat_bmi)
+
+    st.dataframe(df, use_container_width=True)
+
+    fig, ax = plt.subplots(figsize=(8,4))
+
+    ax.plot(df["Tanggal"], df["BMI"], marker="o")
+
+    ax.set_xlabel("Tanggal")
+    ax.set_ylabel("BMI")
+    ax.set_title("Perkembangan BMI")
+
+    plt.xticks(rotation=30)
+
+    st.pyplot(fig)
+
+else:
+    st.info("Belum ada data BMI.")
+
+st.header("⚖️ Grafik Berat Badan")
+
+if len(st.session_state.riwayat_bmi) > 0:
+
+    fig2, ax2 = plt.subplots(figsize=(8,4))
+
+    ax2.plot(df["Tanggal"], df["Berat"], marker="o")
+
+    ax2.set_xlabel("Tanggal")
+    ax2.set_ylabel("Berat (kg)")
+    ax2.set_title("Perkembangan Berat Badan")
+
+    plt.xticks(rotation=30)
+
+    st.pyplot(fig2)
